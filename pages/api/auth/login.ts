@@ -2,6 +2,9 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { compare, hashSync } from "bcrypt-ts";
 import { connectToDatabase } from "../../../lib/mongodb";
 import User from "../../../models/User";
+import { SignJWT } from "jose";
+
+const secretKey = new TextEncoder().encode(process.env.JWT_SECRET || "!@#$%^&*()");
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
@@ -23,12 +26,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(401).json({ message: "Invalid username or password" });
     }
 
+    const token = await new SignJWT({ 
+      id: existingUser._id, 
+      username: existingUser.username 
+    })
+      .setProtectedHeader({ alg: "HS256" })
+      .setIssuedAt()
+      .setExpirationTime("24h")
+      .sign(secretKey);
+
     res.status(200).json({
       message: "Login successful",
-      data: { 
-        id: existingUser._id, 
-        username: existingUser.username 
-      },
+      data: token,
     })
   } catch (error) {
     return res.status(500).json({ message: "Something went wrong", error });
