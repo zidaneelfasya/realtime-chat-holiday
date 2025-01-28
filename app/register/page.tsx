@@ -18,8 +18,8 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0D1625]">
-      <div className=" bg-[#0F1215] px-8 py-12 rounded-xl shadow-lg w-96 h-[500px]">
+    <div className="min-h-screen flex items-center justify-center bg-[#191f29]">
+      <div className=" bg-[#0F1215] px-8 py-12 rounded-3xl shadow-lg w-96 h-[500px]">
         <h2 className="text-white text-xl mb-28">Register</h2>
         <form onSubmit={handleSubmit} className="flex flex-col">
           <label className="text-gray-400">Username</label>
