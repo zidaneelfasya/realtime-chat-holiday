@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { hashSync } from "bcrypt-ts";
 import { connectToDatabase } from "../../../lib/mongodb";
-import User from "../../../models/User";
+import User from "@/models/User";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
@@ -20,18 +20,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Cek apakah user sudah terdaftar
     const existingUser = await User.findOne({ username });
     if (existingUser) {
+      console.log("username sudah ada")
+
       return res.status(409).json({ message: "Username already exists" });
     }
-
-    // Hash password
     const hashedPassword = await hashSync(password, 10);
-
-    // Simpan user baru
     const newUser = new User({ username, password: hashedPassword });
     await newUser.save();
-
+    console.log("berhasil register")
     return res.status(201).json({ message: "User registered successfully" });
+
   } catch (error) {
+    console.log("gagall register")
     return res.status(500).json({ message: "Something went wrong", error });
   }
 }
