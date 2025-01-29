@@ -1,5 +1,6 @@
 'use client';
 
+import axios from '@/lib/axios';
 import Link from 'next/link';
 import { useState } from 'react';
 
@@ -9,12 +10,11 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password })
-    });
-    const data = await res.json();
+    axios.post("/api/auth/login", {
+      username, password
+    }).then(res => {
+      console.log(res)
+    })
   };
 
   return (
