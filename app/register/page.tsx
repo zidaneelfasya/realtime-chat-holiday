@@ -1,25 +1,55 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Swal from 'sweetalert2';
 
 export default function Register() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await fetch('/api/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password })
-    });
-    const data = await res.json();
-    console.log(data);
+    
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Registrasi Berhasil!',
+          text: data.message, // Menggunakan pesan dari API
+          timer: 2000,
+          showConfirmButton: false
+        }).then(() => {
+          router.push('/login');
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Registrasi Gagal!',
+          text: data.message || 'Terjadi kesalahan, silakan coba lagi.', // Menampilkan pesan error dari API
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Terjadi kesalahan, silakan coba lagi nanti.',
+      });
+    }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#191f29]">
-      <div className=" bg-[#0F1215] px-8 py-12 rounded-3xl shadow-lg w-96 h-[500px]">
+      <div className="bg-[#0F1215] px-8 py-12 rounded-3xl shadow-lg w-96 h-[500px]">
         <h2 className="text-white text-xl mb-28">Register</h2>
         <form onSubmit={handleSubmit} className="flex flex-col">
           <label className="text-gray-400">Username</label>
