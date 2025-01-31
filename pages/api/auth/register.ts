@@ -20,18 +20,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Cek apakah user sudah terdaftar
     const existingUser = await User.findOne({ username });
     if (existingUser) {
-      console.log("username sudah ada")
-
       return res.status(409).json({ message: "Username already exists" });
     }
-    const hashedPassword = await hashSync(password, 10);
+
+    const hashedPassword = hashSync(password, 10);
     const newUser = new User({ username, password: hashedPassword });
     await newUser.save();
-    console.log("berhasil register")
+    
     return res.status(201).json({ message: "User registered successfully" });
 
   } catch (error) {
-    console.log("gagall register")
-    return res.status(500).json({ message: "Something went wrong", error });
+    return res.status(500).json({ message: "Something went wrong", error: error.message });
   }
 }
