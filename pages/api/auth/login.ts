@@ -40,6 +40,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       data: token,
     })
   } catch (error) {
-    return res.status(500).json({ message: "Something went wrong", error });
+    return res.status(500).json({ message: "Something went wrong", error: error.message });
   }
 }
