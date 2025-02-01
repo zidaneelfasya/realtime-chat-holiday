@@ -1,5 +1,6 @@
 'use client';
 
+import HELPER from '@/helpers/helper';
 // import axios from 'axios';
 import axios from '@/lib/axios';
 import Link from 'next/link';
@@ -25,13 +26,13 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    axios.post("/api/auth/login", {
-      username, password
-    }).then(res => {
-      const expiresAt = Date.now() + 24 * 60 * 60 * 1000
-      localStorage.setItem("token", res.data.data)
-      localStorage.setItem("expiresAt", expiresAt.toString())
-      router.push("/")
+    HELPER.form('POST', "/api/auth/login", { username, password }).then(res => {
+      if(res.success) {
+        const expiresAt = Date.now() + 24 * 60 * 60 * 1000
+        localStorage.setItem("token", res.data.data)
+        localStorage.setItem("expiresAt", expiresAt.toString())
+        router.push("/")
+      }
     })
   };
 
