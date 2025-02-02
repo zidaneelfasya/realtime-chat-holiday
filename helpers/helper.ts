@@ -10,6 +10,29 @@ interface ApiResponse<T = any> {
 }
 
 const HELPER = {
+    Axios: async (
+        method: RequestMethod = 'GET',
+        url: string = '/',
+        data: Record<string, any> = {},
+        headers: Record<string, string> = {}
+    ) => {
+        try {
+            const response = await axios({
+                method,
+                url,
+                data,
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...headers
+                },
+                withCredentials: true 
+            });
+            return { success: true, data: response };
+        } catch (error: any) {
+            return { success: false, message: error.response?.data?.error || 'Terjadi kesalahan.' };
+        }
+    },
+
     showAlert: (
         icon: 'success' | 'error' | 'warning' | 'info' | 'question', 
         options: SweetAlertOptions = {}

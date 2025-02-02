@@ -3,6 +3,7 @@ import { compare, hashSync } from "bcrypt-ts";
 import { connectToDatabase } from "../../../lib/mongodb";
 import User from "../../../models/User";
 import { SignJWT } from "jose";
+import { serialize } from "cookie";
 
 const secretKey = new TextEncoder().encode(process.env.JWT_SECRET || "!@#$%^&*()");
 
@@ -35,9 +36,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       .setExpirationTime("24h")
       .sign(secretKey);
 
+    const cookie = serialize("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      path: "/",
+      maxAge: 24 * 60 * 60,
+    });
+
+    res.setHeader("Set-Cookie", cookie);
+
     res.status(200).json({
       message: "Login successful",
-      data: token,
+      data: {
+        id: existingUser._id, 
+        username, 
+      },
     })
   } catch (error) {
     return res.status(500).json({ message: "Something went wrong", error: error.message });
