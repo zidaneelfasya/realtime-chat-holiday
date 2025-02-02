@@ -1,20 +1,18 @@
 'use client';
 
 import Button from '@/components/ui/Button'
-import { useAuthCheck } from '@/lib/auth';
+import HELPER from '@/helpers/helper';
 import { useRouter } from 'next/navigation';
-import React from 'react'
+import React, { useEffect } from 'react'
 
 const page = () => {
   const router = useRouter()
-  const isChecking = useAuthCheck()
-  if (isChecking) return null
 
   return (
-    <Button onClick={()=>{
-      localStorage.removeItem("token")
-      localStorage.removeItem("expiresAt")
-      router.push("/login")
+    <Button onClick={async()=>{
+      HELPER.Axios('POST', 'api/auth/logout').then(res => {
+        if(res.success) router.replace('/login')
+      })
     }}>
       Logout
     </Button>
