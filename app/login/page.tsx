@@ -1,7 +1,6 @@
 'use client';
 
-// import axios from 'axios';
-import axios from '@/lib/axios';
+import HELPER from '@/helpers/helper';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -10,28 +9,11 @@ export default function Login() {
   const router = useRouter()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      router.push('/');
-    } else {
-      setLoading(false);
-    }
-  }, [router]);
-
-  if (loading) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    axios.post("/api/auth/login", {
-      username, password
-    }).then(res => {
-      const expiresAt = Date.now() + 24 * 60 * 60 * 1000
-      localStorage.setItem("token", res.data.data)
-      localStorage.setItem("expiresAt", expiresAt.toString())
-      router.push("/")
+    HELPER.form('POST', "/api/auth/login", { username, password }).then(res => {
+      if(res.success) router.replace("/")
     })
   };
 
