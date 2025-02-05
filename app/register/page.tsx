@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Swal from 'sweetalert2';
 import Link from 'next/link';
+import HELPER from '@/helpers/helper';
 
 export default function Register() {
   const [username, setUsername] = useState('');
@@ -12,40 +12,9 @@ export default function Register() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    try {
-      const res = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        Swal.fire({
-          icon: 'success',
-          title: 'Registrasi Berhasil!',
-          text: data.message, // Menggunakan pesan dari API
-          timer: 2000,
-          showConfirmButton: false
-        }).then(() => {
-          router.push('/login');
-        });
-      } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Registrasi Gagal!',
-          text: data.message || 'Terjadi kesalahan, silakan coba lagi.', // Menampilkan pesan error dari API
-        });
-      }
-    } catch (error) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'Terjadi kesalahan, silakan coba lagi nanti.',
-      });
-    }
+    HELPER.form('POST', "/api/auth/register", { username, password }).then(res => {
+      if(res.success) router.replace("/login")
+    })
   };
 
   return (
