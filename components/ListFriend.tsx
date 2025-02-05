@@ -8,7 +8,7 @@ interface ListFriendProps {
 const ListFriend: FC<ListFriendProps> = ({ name, text }) => {
   return (
     <div className="p-2 bg-gray-700 rounded-lg my-2 ">
-      <div>
+      <div className="flex justify-between">
         <p className="text-lg text-gray-300">{name}</p>
         <p className="text-lg text-gray-300">yesterday</p>
       </div>
