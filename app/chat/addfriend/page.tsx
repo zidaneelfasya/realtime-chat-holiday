@@ -14,12 +14,10 @@ export default function AddFriendPage() {
   >([]);
   const handleSearch = () => {
     HELPER.Axios("GET", "/api/user", { username: searchQuery })
-      .then((res) => {
-        console.log(res.data.data);
-        setSearchResults(res.data.data);
-        console.log(searchResults); // Simpan hasil pencarian ke state
-      })
-      .catch((err) => console.log(err));
+      .then(async (res) => {
+        await setSearchResults(res.data.data);
+        console.log(searchResults)
+      });
   };
 
   return (
@@ -27,8 +25,10 @@ export default function AddFriendPage() {
       <div className=" bg-[#0F1215] px-8 py-12 rounded-3xl shadow-lg w-96 h-[500px]">
         <h2 className="text-white text-xl mb-10">Login</h2>
         <Search
-          onSubmit={(handleSearch)}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>)=>{
+            setSearchQuery(e.target.value)
+          }}
+          onSubmit={handleSearch}
         />
         <div className="mt-5">
           {searchResults.length > 0 ? (
@@ -41,11 +41,12 @@ export default function AddFriendPage() {
                   {user.username}
                   <button
                     className="bg-blue-500 px-2 py-1 text-white rounded"
-                    onClick={() =>
+                    onClick={() => {
                       console.log(
-                        `Mengirim permintaan pertemanan ke ${user.username}`
+                        `Mengirim permintaan pertemanan ke ${user._id}`
                       )
-                    }
+                      HELPER.form('POST', '/api/friend', { user_id: user._id })
+                    }}
                   >
                     Tambah
                   </button>
