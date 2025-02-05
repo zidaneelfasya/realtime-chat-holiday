@@ -10,6 +10,14 @@ interface ApiResponse<T = any> {
 }
 
 const HELPER = {
+    block: ()=>{
+
+    },
+
+    unblock: ()=>{
+
+    },
+
     Axios: async (
         method: RequestMethod = 'GET',
         url: string = '/',
@@ -20,7 +28,8 @@ const HELPER = {
             const response = await axios({
                 method,
                 url,
-                data,
+                data: method !== "GET" ? data : undefined,
+                params: method == "GET" ? data : undefined,
                 headers: {
                     'Content-Type': 'application/json',
                     ...headers
