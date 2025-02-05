@@ -31,7 +31,6 @@ const post = async (req, res) => {
         let find: any = { _id: { $ne: req.user.payload.id } }
         if (username) find.username = { $regex: username, $options: "i" }
 
-        console.log(find)
         const existingUser = await User.find(find).select("_id username")
 
         res.status(200).json({
