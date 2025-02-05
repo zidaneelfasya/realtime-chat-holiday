@@ -28,19 +28,28 @@ const get = async (req: any, res: NextApiResponse) => {
     try {
         const find = { user: me }
 
-        const existingFriend = await Friend.find(find).populate({
-            path: "friend",
-            select: "username _id",
-            match: username ? { username: { $regex: username, $options: "i" } } : {}
-        }).select("friend _id");
-
-        const filteredFriends = existingFriend.filter(f => f.friend !== null);
+        const friends = await Friend.find({
+            $or: [{ user: me }, { friend: me }],
+          })
+            .populate({
+              path: "user friend",
+              select: "username _id",
+            })
+            .lean();
+      
+          // Format agar hanya menampilkan data teman, bukan diri sendiri
+          const friendList = friends.map((friend) => {
+            return friend.user._id.toString() === me
+              ? friend.friend
+              : friend.user;
+          });
 
         res.status(200).json({
             message: "Requested data found",
-            data: filteredFriends,
+            data: friendList,
         })
     } catch (error) {
+        console.log(error)
         return res.status(500).json({ message: "Something went wrong", error: error.message });
     }
 }
@@ -62,11 +71,31 @@ const post = async (req: any, res: NextApiResponse) => {
         const newFriend = new Friend({
             user: me,
             friend: user_id,
+            status: "pending", // Pastikan ini ada
         });
+        
+        // Simpan dan pastikan `status` diambil
+        const savedFriend = await newFriend.save();
+        
+        return res.status(200).json({ message: "Friend request sent successfully", friend: savedFriend });
+         
+    } catch (error) {
+        return res.status(500).json({ message: "Something went wrong", error: error.message });
+    }
+}
 
-        await newFriend.save();
-
-        return res.status(200).json({ message: "Friend request sent successfully", friend: newFriend });
+const put = async (req: any, res: NextApiResponse) => {
+    const {status, id} = req.body
+    const me = req.user.payload.id
+    try {
+        const accept = await Friend.findOneAndUpdate(
+            {
+                _id: id, 
+            },
+            {
+                status: status
+            }
+        )
     } catch (error) {
         return res.status(500).json({ message: "Something went wrong", error: error.message });
     }
