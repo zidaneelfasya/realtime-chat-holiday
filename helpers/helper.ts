@@ -10,13 +10,6 @@ interface ApiResponse<T = any> {
 }
 
 const HELPER = {
-    block: ()=>{
-
-    },
-
-    unblock: ()=>{
-
-    },
 
     Axios: async (
         method: RequestMethod = 'GET',
@@ -36,7 +29,7 @@ const HELPER = {
                 },
                 withCredentials: true 
             });
-            return { success: true, data: response };
+            return { success: true, data: response.data };
         } catch (error: any) {
             return { success: false, message: error.response?.data?.error || 'Terjadi kesalahan.' };
         }
