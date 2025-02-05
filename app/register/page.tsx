@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Swal from 'sweetalert2';
+import Link from 'next/link';
 
 export default function Register() {
   const [username, setUsername] = useState('');
@@ -66,6 +67,10 @@ export default function Register() {
             value={password} 
             onChange={(e) => setPassword(e.target.value)}
           />
+          <span className="self-end text-sm">
+            Sudah punya akun ?
+            <Link className="text-blue-400" href="/login"> Login</Link>
+          </span>
           <button 
             type="submit" 
             className="border-[1px] rounded-md mt-24 px-4 py-2 text-white border-white text-center outline-none transition-all duration-200 ease-out hover:bg-white hover:text-black hover:duration-300 self-end"
