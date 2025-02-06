@@ -11,12 +11,21 @@ interface ApiResponse<T = any> {
 
 const HELPER = {
 
+    block: ()=>{
+        document.getElementById("loading")!.style.display = "flex"
+    },
+
+    unblock: () => {
+        document.getElementById("loading")!.style.display = "none"
+    },
+
     Axios: async (
         method: RequestMethod = 'GET',
         url: string = '/',
         data: Record<string, any> = {},
         headers: Record<string, string> = {}
     ) => {
+        HELPER.block()
         try {
             const response = await axios({
                 method,
@@ -31,7 +40,9 @@ const HELPER = {
             });
             return { success: true, data: response.data };
         } catch (error: any) {
-            return { success: false, message: error.response?.data?.error || 'Terjadi kesalahan.' };
+            return { success: false, message: error.response?.data?.message || 'Terjadi kesalahan.' };
+        } finally {
+            HELPER.unblock()
         }
     },
 
@@ -55,6 +66,7 @@ const HELPER = {
         headers: Record<string, string> = {},
         confirmMessage: boolean = false
     ): Promise<ApiResponse<T>> => {
+        HELPER.block()
         try {
             if (confirmMessage) {
                 const result = await HELPER.showAlert("warning", {
@@ -89,7 +101,7 @@ const HELPER = {
 
             return { success: true, data: response.data };
         } catch (error: any) {
-            const errorMessage: string = error.response?.data?.error || 'Terjadi kesalahan saat memproses permintaan.';
+            const errorMessage: string = error.response?.data?.message || 'Terjadi kesalahan saat memproses permintaan.';
             
             await HELPER.showAlert("error", {
                 title: 'Oops!',
@@ -97,6 +109,8 @@ const HELPER = {
             });
 
             return { success: false, message: errorMessage };
+        } finally {
+            HELPER.unblock()
         }
     }
 };
