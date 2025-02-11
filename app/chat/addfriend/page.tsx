@@ -13,30 +13,31 @@ export default function AddFriendPage() {
     { _id: string; username: string }[]
   >([]);
   const handleSearch = () => {
-    HELPER.Axios("GET", "/api/user", { username: searchQuery })
-      .then(async (res) => {
+    HELPER.Axios("GET", "/api/user", { username: searchQuery }).then(
+      async (res) => {
         await setSearchResults(res.data.data);
-        console.log(searchResults)
-      });
+        console.log(searchResults);
+      }
+    );
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#191f29]">
-      <div className=" bg-[#0F1215] px-8 py-12 rounded-3xl shadow-lg w-96 h-[500px]">
-        <h2 className="text-white text-xl mb-10">Login</h2>
+      <div className="bg-[#0F1215] px-8 py-12 rounded-3xl shadow-lg w-96 h-[500px] flex flex-col">
+        <h2 className="text-white text-xl mb-4">Tambah Teman</h2>
         <Search
-          onChange={(e: React.ChangeEvent<HTMLInputElement>)=>{
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             setSearchQuery(e.target.value)
-          }}
+          }
           onSubmit={handleSearch}
         />
-        <div className="mt-5">
+        <div className="mt-5 flex-1 overflow-y-auto">
           {searchResults.length > 0 ? (
-            <ul className="text-white">
+            <ul className="text-white space-y-2">
               {searchResults.map((user) => (
                 <li
                   key={user._id}
-                  className="p-2 border-b border-gray-700 flex justify-between"
+                  className="p-2 border-b border-gray-700 flex justify-between items-center"
                 >
                   {user.username}
                   <button
@@ -44,8 +45,8 @@ export default function AddFriendPage() {
                     onClick={() => {
                       console.log(
                         `Mengirim permintaan pertemanan ke ${user._id}`
-                      )
-                      HELPER.form('POST', '/api/friend', { user_id: user._id })
+                      );
+                      HELPER.form("POST", "/api/friend", { user_id: user._id });
                     }}
                   >
                     Tambah
@@ -57,8 +58,6 @@ export default function AddFriendPage() {
             <p className="text-gray-400">Tidak ada hasil</p>
           )}
         </div>
-
-        {/* <ListSearchFriend /> */}
       </div>
     </div>
   );
