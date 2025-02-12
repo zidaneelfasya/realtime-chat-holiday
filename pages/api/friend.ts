@@ -15,6 +15,9 @@ export default async function handler(req: any, res: NextApiResponse) {
         case "POST":
                 post(req, res)
             break;
+        case "PUT":
+            post(req, res)
+            break;
         default:
                 return res.status(405).json({ message: "Method not allowed" });
             break;
@@ -30,6 +33,7 @@ const get = async (req: any, res: NextApiResponse) => {
 
         const friends = await Friend.find({
             $or: [{ user: me }, { friend: me }],
+            
           })
             .populate({
               path: "user friend",
