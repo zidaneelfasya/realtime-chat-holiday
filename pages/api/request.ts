@@ -98,7 +98,6 @@ const post = async (req: any, res: NextApiResponse) => {
 const put = async (req: NextApiRequest, res: NextApiResponse) => {
   const { id } = req.body;
   console.log(id);
-  console.log()
   const me = req.user.payload.id;
 
   try {
