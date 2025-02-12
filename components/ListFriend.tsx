@@ -10,7 +10,6 @@ const ListFriend: FC<ListFriendProps> = ({ name, text }) => {
     <div className="p-2 bg-gray-700 rounded-lg my-2 ">
       <div className="flex justify-between">
         <p className="text-lg text-gray-300">{name}</p>
-        <p className="text-lg text-gray-300">yesterday</p>
       </div>
       <div>
         <p className="text-sm text-white">{text}</p>
