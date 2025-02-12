@@ -1,9 +1,12 @@
-import type { NextApiResponse } from "next";
+import type { NextApiRequest, NextApiResponse } from "next";
 import { connectToDatabase } from "../../lib/mongodb";
 import { verifyAPI } from "@/lib/auth";
 import Friend from "@/models/Friend";
 
-export default async function handler(req: any, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   await verifyAPI(req, res);
 
   await connectToDatabase();
@@ -16,7 +19,7 @@ export default async function handler(req: any, res: NextApiResponse) {
       post(req, res);
       break;
     case "PUT":
-      post(req, res);
+      return put(req, res);
       break;
     default:
       return res.status(405).json({ message: "Method not allowed" });
@@ -25,12 +28,16 @@ export default async function handler(req: any, res: NextApiResponse) {
 }
 
 const get = async (req: any, res: NextApiResponse) => {
+  const { username } = req.body;
   const me = req.user.payload.id;
 
   try {
+    const find = { user: me };
+
     const friends = await Friend.find({
+      // $or: [{ user: me }, { friend: me }],
       $or: [{ friend: me }],
-      status: "accepted",
+      status: "pending",
     })
       .populate({
         path: "user friend",
@@ -39,14 +46,9 @@ const get = async (req: any, res: NextApiResponse) => {
       .lean();
 
     const friendList = friends.map((friend) => ({
-      _id:
-        friend.user._id.toString() === me ? friend.friend._id : friend.user._id,
-      username:
-        friend.user._id.toString() === me
-          ? friend.friend.username
-          : friend.user.username,
+      _id: friend._id, // Mengembalikan ID friend request
+      friend: friend.user._id.toString() === me ? friend.friend : friend.user,
     }));
-
     return res.status(200).json({
       message: "Friends retrieved successfully",
       data: friendList,
@@ -93,18 +95,31 @@ const post = async (req: any, res: NextApiResponse) => {
   }
 };
 
-const put = async (req: any, res: NextApiResponse) => {
-  const { status, id } = req.body;
+const put = async (req: NextApiRequest, res: NextApiResponse) => {
+  const { id } = req.body;
+  console.log(id);
   const me = req.user.payload.id;
+
   try {
-    const accept = await Friend.findOneAndUpdate(
-      {
-        _id: id,
-      },
-      {
-        status: status,
-      }
-    );
+    const friendRequest = await Friend.findOne({
+      _id: id,
+      friend: me,
+      status: "pending",
+    });
+
+    if (!friendRequest) {
+      return res.status(404).json({ message: "Friend request not found" });
+    }
+
+    friendRequest.status = "accepted";
+    await friendRequest.save();
+
+    res
+      .status(200)
+      .json({ message: "Friend request accepted", data: friendRequest });
+    return res
+      .status(200)
+      .json({ message: "Friend request accepted", data: accept });
   } catch (error) {
     return res
       .status(500)
