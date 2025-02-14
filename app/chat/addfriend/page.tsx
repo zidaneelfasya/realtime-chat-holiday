@@ -41,15 +41,12 @@ export default function AddFriendPage() {
                 >
                   {user.username}
                   <button
-                    className="bg-blue-500 px-2 py-1 text-white rounded"
+                    className={`${!user.friendStatus ? "bg-blue-500" : user.friendStatus == "pending" ? "bg-yellow-500" :  "bg-red-500" } px-2 py-1 text-white rounded`}
                     onClick={() => {
-                      console.log(
-                        `Mengirim permintaan pertemanan ke ${user._id}`
-                      );
                       HELPER.form("POST", "/api/friend", { user_id: user._id });
                     }}
                   >
-                    Tambah
+                    {!user.friendStatus ? "Tambah" : user.friendStatus == "pending" ? "Menunggu" : "Ditolak" }
                   </button>
                 </li>
               ))}
