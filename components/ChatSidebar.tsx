@@ -4,32 +4,27 @@ import Sidebar from "./Sidebar";
 import Search from "./ui/Search";
 import HELPER from "@/helpers/helper";
 
-export default function ChatSidebar() {
+
+interface Friend {
+  _id: string;
+  username: string;
+}
+
+interface ChatSidebarProps {
+  friends: Friend[];
+  loading: boolean;
+  onSelectFriend: (friend: Friend) => void;
+}
+
+export default function ChatSidebar({
+  friends,
+  loading,
+  onSelectFriend,
+}: ChatSidebarProps) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<
-    { _id: string; username: string }[]
-  >([]);
-
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchFriends = async () => {
-      setLoading(true);
-      try {
-        const res = await HELPER.Axios("GET", "/api/friend");
-        setSearchResults(res.data.data);
-      } catch (error) {
-        console.error("Error fetching friends:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchFriends();
-  }, []);
 
   return (
-    <div className=" flex w-1/4">
+    <div className="flex w-1/4">
       <div className="flex-1 bg-gray-900 text-white p-4 rounded-l-3xl">
         <h2 className="text-xl font-bold">Friends</h2>
         <Search
@@ -44,22 +39,28 @@ export default function ChatSidebar() {
             setSearchQuery(e.target.value);
           }}
         />
+
         <div>
           {loading ? (
             <p>Loading friends...</p>
-          ) : searchResults.length > 0 ? (
-            searchResults.map((friend) => (
-              <ListFriend key={friend._id} text="Hallo" name={friend.username} />
-            ))
+          ) : friends.length > 0 ? (
+            friends
+              .filter((friend) =>
+                friend.username.toLowerCase().includes(searchQuery.toLowerCase())
+              )
+              .map((friend) => (
+                <div
+                  key={friend._id}
+                  onClick={() => onSelectFriend(friend)}
+                  className=" "
+                >
+                  <ListFriend text="Hallo" name={friend.username} />
+                </div>
+              ))
           ) : (
             <p>No friends found</p>
           )}
         </div>
-        <div>
-          <ListFriend text="Hello" name="isi disini untuk nama" />
-          <ListFriend text="Hello" name="zidane" />
-        </div>
-        {/* Tambahkan daftar chat di sini */}
       </div>
     </div>
   );
