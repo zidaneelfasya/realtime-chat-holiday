@@ -13,7 +13,7 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     HELPER.form('POST', "/api/auth/login", { username, password }).then(res => {
-      if(res.success) router.replace("/")
+      if(res.success) router.replace("/chat")
     })
   };
 
