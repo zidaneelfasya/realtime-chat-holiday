@@ -13,7 +13,9 @@ interface Message {
 interface ChatWindowProps {
   selectedFriend: Friend | null;
 }
-const ChatWindow: FC = () => {
+const ChatWindow: FC = ({
+  selectedFriend
+}:ChatWindowProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -34,7 +36,7 @@ const ChatWindow: FC = () => {
 
   return (
     <div className="flex-1 flex flex-col bg-gray-800 text-white rounded-3xl p-10">
-      <HeaderChat name="Zidane" />
+      <HeaderChat name={selectedFriend.username} />
       <hr className="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700"></hr>
       <div className="flex-1 p-4 overflow-y-auto">
         {loading ? (
