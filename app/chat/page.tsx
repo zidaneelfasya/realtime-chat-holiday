@@ -36,10 +36,15 @@ export default function ChatPage() {
       <ChatSidebar
         friends={friends}
         loading={loading}
-        onSelectFriend={setSelectedFriend}
+        onSelectFriend={(res)=>setSelectedFriend(res)}
       />
-
-      <ChatWindow selectedFriend={selectedFriend} />
+      {
+        selectedFriend ? (
+          <ChatWindow selectedFriend={selectedFriend} />
+        ) : (
+          <h1>Belum ada chat yang dipilih</h1>
+        )
+      }
     </div>
   );
 }
