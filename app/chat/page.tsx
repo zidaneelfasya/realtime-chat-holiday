@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import ChatWindow from "@/components/ChatWindow";
 import ChatSidebar from "@/components/ChatSidebar";
 import HELPER from "@/helpers/helper";
+import NoChatSelected from "@/components/NoChatSelected";
 
 interface Friend {
   _id: string;
@@ -42,7 +43,7 @@ export default function ChatPage() {
         selectedFriend ? (
           <ChatWindow selectedFriend={selectedFriend} />
         ) : (
-          <h1>Belum ada chat yang dipilih</h1>
+          <NoChatSelected />
         )
       }
     </div>
