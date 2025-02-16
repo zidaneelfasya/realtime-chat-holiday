@@ -3,7 +3,10 @@ import { connectToDatabase } from "../../lib/mongodb";
 import { verifyAPI } from "@/lib/auth";
 import Message from "@/models/Message";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   await verifyAPI(req, res);
   await connectToDatabase();
 
@@ -31,7 +34,8 @@ const getMessages = async (req: NextApiRequest, res: NextApiResponse) => {
         { sender: receiver, receiver: me },
       ],
     })
-      .sort({ createdAt: 1 })
+      .populate("sender", "username _id")
+      .sort({ createdAt: 1 }) // Urutkan berdasarkan waktu pembuatan (dari yang lama ke baru)
       .lean();
 
     return res.status(200).json({
@@ -39,7 +43,9 @@ const getMessages = async (req: NextApiRequest, res: NextApiResponse) => {
       data: messages,
     });
   } catch (error) {
-    return res.status(500).json({ message: "Something went wrong", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Something went wrong", error: error.message });
   }
 };
 
@@ -63,12 +69,17 @@ const sendMessage = async (req: NextApiRequest, res: NextApiResponse) => {
       data: newMessage,
     });
   } catch (error) {
-    return res.status(500).json({ message: "Something went wrong", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Something went wrong", error: error.message });
   }
 };
 
 // **Memperbarui status pesan (delivered / read)**
-const updateMessageStatus = async (req: NextApiRequest, res: NextApiResponse) => {
+const updateMessageStatus = async (
+  req: NextApiRequest,
+  res: NextApiResponse
+) => {
   const { messageId, status } = req.body;
   const me = req.user.payload.id;
 
@@ -86,8 +97,12 @@ const updateMessageStatus = async (req: NextApiRequest, res: NextApiResponse) =>
     message.status = status;
     await message.save();
 
-    return res.status(200).json({ message: "Message status updated", data: message });
+    return res
+      .status(200)
+      .json({ message: "Message status updated", data: message });
   } catch (error) {
-    return res.status(500).json({ message: "Something went wrong", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Something went wrong", error: error.message });
   }
 };
