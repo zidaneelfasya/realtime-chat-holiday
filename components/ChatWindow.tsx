@@ -7,7 +7,7 @@ import HELPER from "@/helpers/helper";
 interface Message {
   _id: string;
   username: string;
-  content: string; // Perbaiki dari text ke content (sesuai API)
+  content: string; 
   sender: string;
   createdAt: string;
 }
@@ -18,6 +18,7 @@ interface ChatWindowProps {
 
 const ChatWindow: FC<ChatWindowProps> = ({ selectedFriend }) => {
   const [messages, setMessages] = useState<Message[]>([]);
+  
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -53,7 +54,7 @@ const ChatWindow: FC<ChatWindowProps> = ({ selectedFriend }) => {
           <p>No messages yet</p>
         )}
       </div>
-      <ChatInput setMessages={setMessages} />
+      <ChatInput setMessages={setMessages} selectedFriend={selectedFriend} />
     </div>
   );
 };
