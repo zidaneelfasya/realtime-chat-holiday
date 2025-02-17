@@ -29,7 +29,12 @@ const get = async (req: any, res: NextApiResponse) => {
 
   try {
     const friends = await Friend.find({
-      $or: [{ friend: me }],
+      $or: [
+        { friend: me },
+        {
+          user: me,
+        },
+      ],
       status: "accepted",
     })
       .populate({
