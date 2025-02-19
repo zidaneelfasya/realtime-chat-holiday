@@ -3,12 +3,16 @@ import ChatInput from "./ChatInput";
 import HeaderChat from "./HeaderChat";
 import MessageBubble from "./MessageBubble";
 import HELPER from "@/helpers/helper";
+import { getCookie } from "cookies-next";
 
 interface Message {
   _id: string;
-  username: string;
+  
   content: string; 
-  sender: string;
+  sender: {
+    _id: string;
+    username: string;
+  };
   createdAt: string;
 }
 
@@ -18,8 +22,16 @@ interface ChatWindowProps {
 
 const ChatWindow: FC<ChatWindowProps> = ({ selectedFriend }) => {
   const [messages, setMessages] = useState<Message[]>([]);
-  
   const [loading, setLoading] = useState(false);
+
+
+  const[userId, seUserId] = useState("");
+  useEffect(()=>{
+    const idUser = getCookie("idUser");
+    seUserId(idUser);
+  }
+  
+  )
 
   useEffect(() => {
     if (!selectedFriend) return;
@@ -37,18 +49,18 @@ const ChatWindow: FC<ChatWindowProps> = ({ selectedFriend }) => {
     };
 
     fetchMessages();
-  }, [selectedFriend]); // Akan berjalan setiap kali selectedFriend berubah
+  }, [selectedFriend, userId]); // Akan berjalan setiap kali selectedFriend berubah
 
   return (
     <div className="flex-1 flex flex-col bg-gray-800 text-white rounded-3xl p-10">
       <HeaderChat name={selectedFriend?.username || "Chat"} />
       <hr className="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
-      <div className="flex-1 p-4 overflow-y-auto">
+      <div className="flex-1 p-4 ">
         {loading ? (
           <p>Loading messages...</p>
         ) : messages.length > 0 ? (
           messages.map((msg) => (
-            <MessageBubble key={msg._id} text={msg.content} sender={msg.sender.username} />
+            <MessageBubble key={msg._id} text={msg.content} id_sender={userId} sender={msg.sender} />
           ))
         ) : (
           <p>No messages yet</p>

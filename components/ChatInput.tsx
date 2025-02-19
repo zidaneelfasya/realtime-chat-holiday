@@ -13,19 +13,33 @@ export default function ChatInput({ setMessages , selectedFriend}: ChatInputProp
 
   const sendMessage = async () => {
     if (!message.trim() || !selectedFriend) return;
-
+  
     try {
       const res = await HELPER.Axios("POST", "/api/message", {
         content: message,
-        receiver: selectedFriend._id, // isi bagian ini dengan dengan id sender
+        receiver: selectedFriend._id,
       });
-      console.log(selectedFriend._id)
-      setMessages((prevMessages) => [...prevMessages, res.data.data]);
+  
+      const newMessage = res.data.data;
+  
+      // Tambahkan sender agar tidak hilang saat pesan baru dikirim
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          ...newMessage,
+          sender: {
+            _id: newMessage.sender._id, 
+            username: newMessage.sender.username // "You",  Pastikan username ada
+          },
+        },
+      ]);
+  
       setMessage("");
     } catch (error) {
       console.error("Error sending message:", error);
     }
   };
+  
 
   return (
     <div className="p-4 bg-gray-800 flex">
